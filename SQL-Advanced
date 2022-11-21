@@ -1,0 +1,57 @@
+SELECT 
+  CAST(funding_total_usd AS varchar) AS funding_total_usd_string,
+  founded_at_clean::varchar AS founded_at_string
+FROM 
+  tutorial.crunchbase_companies_clean_date
+  
+  SELECT 
+  permalink,
+  founded_at,
+  founded_at_clean
+FROM 
+  tutorial.crunchbase_companies_clean_date
+ORDER BY 
+  founded_at_clean
+  
+SELECT 
+  companies.permalink,
+  companies.founded_at_clean,
+  acquisitions.acquired_at_cleaned,
+  acquisitions.acquired_at_cleaned -
+  companies.founded_at_clean::timestamp AS time_to_acquisition
+FROM 
+  tutorial.crunchbase_companies_clean_date companies
+JOIN 
+  tutorial.crunchbase_acquisitions_clean_date acquisitions
+ON 
+  acquisitions.company_permalink = companies.permalink
+WHERE 
+  founded_at_clean IS NOT NULL
+  
+SELECT 
+  companies.category_code,
+  COUNT(CASE WHEN acquisitions.acquired_at_cleaned <= companies.founded_at_clean::timestamp + INTERVAL '3 years'
+       THEN 1 ELSE NULL END) AS acquired_3_yrs,
+  COUNT(CASE WHEN acquisitions.acquired_at_cleaned <= companies.founded_at_clean::timestamp + INTERVAL '5 years'
+        THEN 1 ELSE NULL END) AS acquired_5_yrs,
+  COUNT(CASE WHEN acquisitions.acquired_at_cleaned <= companies.founded_at_clean::timestamp + INTERVAL '10 years'
+        THEN 1 ELSE NULL END) AS acquired_10_yrs,
+  COUNT(1) AS total
+FROM 
+  tutorial.crunchbase_companies_clean_date companies
+JOIN 
+  tutorial.crunchbase_acquisitions_clean_date acquisitions
+ON 
+  acquisitions.company_permalink = companies.permalink
+WHERE founded_at_clean IS NOT NULL
+GROUP BY 1 
+ORDER BY 5 DESC
+
+SELECT incidnt_num,
+       date,
+       LEFT(date, 10) AS cleaned_date,
+       RIGHT(date, LENGTH(date) - 11) AS cleaned_time
+  FROM tutorial.sf_crime_incidents_2014_01
+  
+  /*Dont understand cleaning strings
+  
